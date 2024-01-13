@@ -1,3 +1,4 @@
+import Overlay from 'ol/Overlay.js';
 window.onload = init;
 
 function init(){
@@ -5,7 +6,7 @@ function init(){
         layers:[
             new ol.layer.Tile({
                 source: new ol.source.TileJSON({
-                    url:'https://api.maptiler.com/maps/topo-v2/tiles.json?key=wchDz6pR3F9CjeKtV0mI',
+                    url:'https://api.maptiler.com/maps/streets-v2/tiles.json?key=wchDz6pR3F9CjeKtV0mI',
                     tileSize: 512,
                 })
             })
@@ -39,11 +40,11 @@ anchor: [0.5, 1]
     
     const toilet = new ol.layer.Vector({
     source: new ol.source.Vector({
-        url:'http://thecleanspot.co/listings/api/toilets/'
-        //format: new ol.format.GeoJSON(),
+        url:'http://thecleanspot.co/listings/api/toilets/',
+        format: new ol.format.GeoJSON(),
     })
 })
-map.addLayer(toilet);
+   map.addLayer(toilet);
 
 const endpointUrl = 'http://thecleanspot.co/listings/api/toilets/'; 
 fetch(endpointUrl)
@@ -70,5 +71,46 @@ fetch(endpointUrl)
             }),
         });
         map.addLayer(pointLayer);
+
+        const element = document.getElementById('popup');
+
+const popup = new Overlay({
+  element: element,
+  positioning: 'bottom-center',
+  stopEvent: false,
+});
+map.addOverlay(popup);
+
+let popover;
+function disposePopover() {
+  if (popover) {
+    popover.dispose();
+    popover = undefined;
+  }
+}
+map.on('click', function (evt) {
+    const feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+      return feature;
+    });
+    disposePopover();
+    if (!feature) {
+      return;
+    }
+    popup.setPosition(evt.coordinate);
+    popover = new bootstrap.Popover(element, {
+      placement: 'top',
+      html: true,
+      content: feature.get('name'),
+    });
+    popover.show();
+  });
+  map.on('pointermove', function (e) {
+    const pixel = map.getEventPixel(e.originalEvent);
+    const hit = map.hasFeatureAtPixel(pixel);
+    map.getTarget().style.cursor = hit ? 'pointer' : '';
+  });
+  
+  map.on('movestart', disposePopover);
+
 })
 }

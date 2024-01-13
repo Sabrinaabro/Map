@@ -5,7 +5,7 @@ function init(){
         layers:[
             new ol.layer.Tile({
                 source: new ol.source.TileJSON({
-                    url:'https://api.maptiler.com/maps/basic-v2/tiles.json?key=wchDz6pR3F9CjeKtV0mI',
+                    url:'https://api.maptiler.com/maps/topo-v2/tiles.json?key=wchDz6pR3F9CjeKtV0mI',
                     tileSize: 512,
                 })
             })
@@ -58,7 +58,7 @@ fetch(endpointUrl)
         }); 
         const pinpointStyle = new ol.style.Style({
             image: new ol.style.Icon({
-                src: 'https://docs.maptiler.com/openlayers/default-marker/marker-icon.png',
+                src: 'https://openlayers.org/en/latest/examples/icon.html',
                 scale: 0.5,
             }),
         });
